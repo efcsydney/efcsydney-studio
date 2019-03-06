@@ -35,6 +35,7 @@
   "devDependencies": {
     "electron": "4.0.7",
     "foreman": "3.0.1",
-    "lodash": "4.17.11"
+    "lodash": "4.17.11",
+    "shortid": "2.2.14"
   }
 }
