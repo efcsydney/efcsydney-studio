@@ -1,22 +1,31 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { Typography } from "@smooth-ui/core-sc";
 import styled from "styled-components";
 
-function Listing({ data, onDelete, onSelect }) {
+function Listing({ data, onDelete }) {
   if (!data.length) {
     return null;
   }
 
   return (
-    <ul>
-      {data.map(item => (
-        <li key={item.id}>
-          <span onClick={() => onSelect(item.id)}>
-            {item.keyword} ({item.version.toUpperCase()})
-          </span>
-          <DeleteLink onClick={() => onDelete(item.id)}>Delete</DeleteLink>
+    <div>
+      <Typography variant="h1">Today's Bible Reading</Typography>
+      <ul>
+        {data.map(item => (
+          <li key={item.id}>
+            <Link to={`/passages/show/${item.id}`}>
+              {item.keyword} ({item.version.toUpperCase()})
+            </Link>
+            <Link to={`/passages/edit/${item.id}`}>Edit</Link>
+            <DeleteLink onClick={() => onDelete(item.id)}>Delete</DeleteLink>
+          </li>
+        ))}
+        <li>
+          <Link to={`/new`}>Create Passage</Link>
         </li>
-      ))}
-    </ul>
+      </ul>
+    </div>
   );
 }
 

@@ -30,9 +30,20 @@ export const getBookName = abbr => {
 };
 
 export const parseKeyword = keyword => {
-  const regExp = /^(.+) (\d+):([\d]+-[\d]+)$/;
-  const matches = keyword.match(regExp);
-  if (!matches) return false;
+  const regExps = [
+    /^(.+)\s*(\d+):([^)]+)$/, // Matt 5:1, Matt 5:1-13, Matt5:1
+    /^(\d+ \s+) (\d+):([^)]+)$/, // 1 Corinthians 5:1-13
+    /^(.+) (\d+)$/, // Matt 5
+    /^([^\s]+)[^\d]*(\d+)[^(]*\(([^)]+)\)$/, // Matt 5 (1-13)
+    /^([^\s]+)[^\d]*(\d+)$/ // Matt 5
+  ];
+
+  let matches;
+  regExps.some(regExp => {
+    matches = keyword.match(regExp);
+    return !!matches;
+  });
+
   return {
     book: matches[1],
     chapter: matches[2],
