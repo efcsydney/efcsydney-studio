@@ -22,7 +22,7 @@ function Listing({ data, onDelete }) {
           </li>
         ))}
         <li>
-          <Link to={`/new`}>Create Passage</Link>
+          <Link to={`/passages/new`}>Create Passage</Link>
         </li>
       </ul>
     </div>
