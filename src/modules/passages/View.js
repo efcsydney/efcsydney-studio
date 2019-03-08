@@ -27,10 +27,10 @@ export function View({ data }) {
     <div>
       <Header>
         <Typography variant="h1">{keyword}</Typography>
-        <HomeLink to={`/passages`}>
+        <HomeLink to={`/passages`} tabIndex="-1">
           <IconHome width="24" height="24" fill="#666" />
         </HomeLink>
-        <EditLink to={`/passages/edit/${id}`}>
+        <EditLink to={`/passages/edit/${id}`} tabIndex="-1">
           <IconPen width="24" height="24" fill="#666" />
         </EditLink>
       </Header>

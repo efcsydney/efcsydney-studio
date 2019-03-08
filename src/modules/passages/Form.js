@@ -35,12 +35,15 @@ const Form = withRouter(({ data, type, history, onSave }) => {
       );
       return;
     }
-    const { book, chapter, range } = result;
-    const query = `${book} ${chapter}:${range}`;
-    searchPassage(form.version, query).then(passage => {
-      const keyword = `${getBookName(book)} ${chapter} (${range})`;
-      setForm({ ...form, message: passage, keyword });
-    });
+    searchPassage(form.version, form.keyword)
+      .then(passage => {
+        let { book, chapter, range } = result;
+        book = getBookName(book);
+        range = range ? `(${range})` : "";
+        const keyword = `${book} ${chapter} ${range}`.trim();
+        setForm({ ...form, message: passage, keyword });
+      })
+      .catch(e => alert(e.message));
   };
 
   return (

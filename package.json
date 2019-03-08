@@ -26,7 +26,7 @@
     "eject": "react-scripts eject",
     "electron": "electron .",
     "electron-start": "node src/electron-wait-react",
-    "react-start": "react-scripts start",
+    "react-start": "BROWSER=none react-scripts start",
     "dist": "yarn build && electron-builder"
   },
   "eslintConfig": {
