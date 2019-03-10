@@ -5,7 +5,7 @@ import { Button, Input, Select, Textarea } from "@smooth-ui/core-sc";
 import { useForm, useSearchPassage } from "./hooks";
 import { getBookName, parseKeyword } from "./utils";
 import { ReactComponent as IconMagic } from "../../svgs/magic-wand.svg";
-import { withRouter } from "react-router-dom";
+import { withRouter, Link } from "react-router-dom";
 
 const Form = withRouter(({ data, type, history, onSave }) => {
   const { form, setForm } = useForm(data);
@@ -39,8 +39,8 @@ const Form = withRouter(({ data, type, history, onSave }) => {
       .then(passage => {
         let { book, chapter, range } = result;
         book = getBookName(book);
-        range = range ? `(${range})` : "";
-        const keyword = `${book} ${chapter} ${range}`.trim();
+        range = range ? `:${range}` : "";
+        const keyword = `${book} ${chapter}${range}`.trim();
         setForm({ ...form, message: passage, keyword });
       })
       .catch(e => alert(e.message));
@@ -49,6 +49,18 @@ const Form = withRouter(({ data, type, history, onSave }) => {
   return (
     <Wrapper onSubmit={handleSave}>
       <Filter>
+        <Select
+          value={form.version}
+          onChange={handleChange("version")}
+          style={{ fontSize: "12px", marginBottom: "10px" }}
+        >
+          <option value="niv">NIV (New International Version)</option>
+          <option value="asv">ASV (American Standard Version)</option>
+          <option value="kjv">KJV (King James Version)</option>
+          <option value="cut">
+            CUT (Chinese Union Trandition 繁體中文和合本)
+          </option>
+        </Select>
         <Header>
           <SearchInput
             value={form.keyword}
@@ -63,14 +75,6 @@ const Form = withRouter(({ data, type, history, onSave }) => {
             <IconMagic fill="white" width="16" height="16" />
           </AutoButton>
         </Header>
-        <Select value={form.version} onChange={handleChange("version")}>
-          <option value="niv">NIV (New International Version)</option>
-          <option value="asv">ASV (American Standard Version)</option>
-          <option value="kjv">KJV (King James Version)</option>
-          <option value="cut">
-            CUT (Chinese Union Trandition 繁體中文和合本)
-          </option>
-        </Select>
       </Filter>
       <Textarea
         control
@@ -79,7 +83,7 @@ const Form = withRouter(({ data, type, history, onSave }) => {
         value={form.message}
         onChange={handleChange("message")}
       />
-      <div>
+      <ButtonRow>
         <Button
           type="button"
           disabled={_.isEmpty(form.keyword) || _.isEmpty(form.message)}
@@ -87,13 +91,21 @@ const Form = withRouter(({ data, type, history, onSave }) => {
         >
           Save
         </Button>
-      </div>
+        <Link to="/passages">Cancel</Link>
+      </ButtonRow>
     </Wrapper>
   );
 });
 
 const Wrapper = styled.form`
   padding: 10px;
+  text-align: center;
+`;
+const ButtonRow = styled.div`
+  padding: 10px 0;
+  * {
+    margin-right: 5px;
+  }
 `;
 const Header = styled.header`
   position: relative;

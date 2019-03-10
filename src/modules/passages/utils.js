@@ -32,12 +32,17 @@ export const getAPIUrl = (version, keyword) => {
  * @param {string} abbr The Bible book abbreviation
  * @returns {boolean|string} The Bible book name. False if nothing is matched
  */
-export const getBookName = abbr => {
+export const getBookName = (abbr = "") => {
+  console.log(abbr);
   const book = _.find(books, book => {
-    const regExp = /\s+/g;
-    abbr = abbr.replace(regExp, "");
-    const aliases = book.aliases.map(a => a.replace(regExp, ""));
-    return abbr === book.name || _.includes(aliases, abbr);
+    const regExp = /\s+/gi;
+    abbr = abbr.replace(regExp, "").toLowerCase();
+    const aliases = book.aliases.map(a => a.toLowerCase().replace(regExp, ""));
+    console.log(abbr, aliases.join(", "));
+    return (
+      book.name.toLowerCase().indexOf(abbr) !== -1 ||
+      aliases.some(alias => alias.indexOf(abbr) !== -1)
+    );
   });
   if (!book) return false;
 
