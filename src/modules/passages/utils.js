@@ -24,33 +24,29 @@ export const getAPIUrl = (version, keyword) => {
 };
 
 /**
- * Get the Bible book name from provided abbreviation.
+ * Get the formal Bible book name by provided string, which is usually an abbreviation.
  *
  * getBookName('Mat') // Matthew
  *
  * @method getBookName
- * @param {string} abbr The Bible book abbreviation
+ * @param {string} name The Bible book abbreviation
  * @returns {boolean|string} The Bible book name. False if nothing is matched
  */
-export const getBookName = (abbr = "") => {
-  console.log(abbr);
-  const book = _.find(books, book => {
-    const regExp = /\s+/gi;
-    abbr = abbr.replace(regExp, "").toLowerCase();
-    const aliases = book.aliases.map(a => a.toLowerCase().replace(regExp, ""));
-    console.log(abbr, aliases.join(", "));
+export const getBookName = (name = "") => {
+  const normalize = str => str.replace(/\s+/g, "").toLowerCase(); // Remove all spaces
+  name = normalize(name);
+  const book = books.find(book => {
+    const aliases = book.aliases.map(alias => normalize(alias));
+    const bookName = normalize(book.name);
     return (
-      book.name.toLowerCase().indexOf(abbr) !== -1 ||
-      aliases.some(alias => alias.indexOf(abbr) !== -1)
+      bookName.includes(name) || aliases.some(alias => alias.includes(name))
     );
   });
-  if (!book) return false;
-
-  return book.name;
+  return book ? book.name : name;
 };
 
 /**
- * Parse the provided keyword into {book, capter, range} object.
+ * Parse provided keyword into {book, capter, range} object.
  *
  * parseKeyword('1 Cor 1:1-15') // {book: '1 Cor', chapter: '1', range: '1-15'}
  *
@@ -62,18 +58,20 @@ export const getBookName = (abbr = "") => {
  * @returns {string} returns.chapter
  * @returns {string} returns.range
  */
-export const parseKeyword = keyword => {
+export const parseKeyword = (keyword = "") => {
+  keyword = keyword.trim();
   const regExps = [
-    /^(.+)\s*(\d+):([^)]+)$/, // Matt 5:1, Matt 5:1-13, Matt5:1
-    /^(\d+ \s+) (\d+):([^)]+)$/, // 1 Corinthians 5:1-13
-    /^(.+) (\d+)$/, // Matt 5
-    /^([^\s]+)[^\d]*(\d+)[^(]*\(([^)]+)\)$/, // Matt 5 (1-13)
-    /^([^\s]+)[^\d]*(\d+)$/ // Matt 5
+    /^(\d+\s?[^\d\s]+)\s?(\d+):(.+)$/, // 1 Cors 5:1-13, 1Cor5:1-13
+    /^(\d+\s?[^\d\s]+)\s?(\d+)$/, // 1 Cor 5, 1Cor5
+    /^([^\d\s]+)\s?(\d+):(.+)$/, // Matt 5:1, Matt5:1, Matt 5:1-13, Matt5:1-13, Matt5:1
+    /^([^\d\s]+)\s?(\d+)$/ // Matt 5, Matt5
+    // /^([^\s]+)[^\d]*(\d+)[^(]*\(([^)]+)\)$/, // Matt 5 (1-13)
+    // /^([^\s]+)[^\d]*(\d+)$/ // Matt 5
   ];
 
   let matches;
   regExps.some(regExp => {
-    matches = keyword.trim().match(regExp);
+    matches = keyword.match(regExp);
     return !!matches;
   });
 
@@ -91,20 +89,21 @@ export const parseKeyword = keyword => {
 /**
  * Convert HTML to verse array
  *
- * @method formatVerse
+ * @method mapHtmlToVerses
  * @param {string} html
  * @returns {boolean} false if it doesn't match anything
- * @returns {object}
+ * @returns {object[]}
  * @returns {string} returns.number The verse number
  * @returns {string} returns.message The verse message
  */
-export const formatVerse = html => {
-  const matches = html.match(/<small>(\d+):(\d+)<\/small>([^<]+)<br>/gm);
+export const mapHtmlToVerses = html => {
+  const regExp = /<small>(\d+):(\d+)<\/small>([^<]+)<br>/;
+  const matches = html.match(new RegExp(regExp, "gm"));
   if (!matches) {
     return false;
   }
   return matches.map(html => {
-    const parts = html.match(/<small>(\d+):(\d+)<\/small>([^<]+)<br>/);
+    const parts = html.match(regExp);
     return {
       number: parts[2],
       message: parts[3]

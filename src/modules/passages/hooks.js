@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getAPIUrl, formatVerse } from "./utils";
+import { getAPIUrl, mapHtmlToVerses } from "./utils";
 import shortid from "shortid";
 const Store = window.require("electron-store");
 
@@ -28,7 +28,7 @@ export function useSearchPassage() {
     return fetch(url)
       .then(response => response.text())
       .then(html => {
-        const verses = formatVerse(html);
+        const verses = mapHtmlToVerses(html);
 
         // TODO: Need to have better error handling
         if (!verses) {
